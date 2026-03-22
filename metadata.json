@@ -1,0 +1,5 @@
+{
+  "name": "TVCal Open Source",
+  "description": "A self-hostable TV show calendar sync app. Search shows, subscribe, and get a personal ICS feed for your calendar.",
+  "requestFramePermissions": []
+}

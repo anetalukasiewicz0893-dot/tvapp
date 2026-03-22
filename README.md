@@ -1,11 +1,14 @@
-<div align="center">
+# TVCal Open Source
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+## Setup
+1. `npm install`
+2. `npm run dev`
 
-  <h1>Built with AI Studio</h2>
+## Environment Variables
+- `APP_URL`: The base URL of your deployment (e.g., `https://your-app.run.app`).
 
-  <p>The fastest path from prompt to production with Gemini.</p>
-
-  <a href="https://aistudio.google.com/apps">Start building</a>
-
-</div>
+## Features
+- Search TV shows via TVMaze API.
+- Subscribe to shows to generate a personal ICS calendar feed.
+- No accounts needed (uses local storage for user ID).
+- Mobile responsive design.
