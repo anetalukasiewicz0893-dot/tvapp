@@ -299,7 +299,72 @@ button:hover {
 }
 
 @media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  .desktop {
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 20px;
+    text-shadow: 2px 2px var(--neon-pink), -1px -1px var(--neon-cyan);
+  }
+
+  .tabs {
+    padding-left: 5px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 10px 15px;
+    font-size: 7px;
+    margin-bottom: 2px;
+  }
+
+  .tab.active {
+    padding-top: 10px;
+    margin-top: 0;
+  }
+
+  .window-header {
+    font-size: 8px;
+  }
+
+  .search-container {
+    flex-direction: column;
+  }
+
+  input[type="text"] {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 12px;
+  }
+
+  button {
+    padding: 12px;
+    font-size: 10px;
+    width: 100%;
+  }
+
   .results-grid {
     grid-template-columns: 1fr;
+  }
+
+  .status-bar {
+    flex-direction: column;
+    gap: 5px;
+    font-size: 10px;
+  }
+
+  .status-field {
+    margin: 0;
+    padding: 5px;
+    flex: 1 1 auto !important;
+  }
+
+  .show-card img {
+    height: auto;
+    aspect-ratio: 2/3;
   }
 }
