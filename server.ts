@@ -37,8 +37,8 @@ async function startServer() {
     if (!query) return res.json([]);
     try {
       const response = await axios.get(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query as string)}`);
-      // Return max 3 results
-      const results = response.data.slice(0, 3).map((item: any) => ({
+      // Return max 10 results
+      const results = response.data.slice(0, 10).map((item: any) => ({
         id: item.show.id,
         name: item.show.name,
         network: item.show.network?.name || item.show.webChannel?.name || 'Unknown',

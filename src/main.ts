@@ -31,21 +31,21 @@ async function fetchUserShows() {
 
 function renderUserShows(shows: any[]) {
   if (shows.length === 0) {
-    userShowsList.innerHTML = '<p class="text-stone-400 italic text-sm">No shows followed yet.</p>';
+    userShowsList.innerHTML = '<p class="text-gray-500 text-[10px] italic">No shows followed yet.</p>';
     return;
   }
 
   userShowsList.innerHTML = shows.map(show => `
-    <div class="flex items-center justify-between p-4 bg-stone-50 rounded-xl border border-stone-200">
-      <div>
-        <h3 class="font-semibold text-sm">${show.showName}</h3>
-        <p class="text-xs text-stone-500">${show.network}</p>
+    <div class="flex items-center justify-between p-1 border-b border-gray-200 last:border-0 hover:bg-win-blue hover:text-white group">
+      <div class="flex flex-col">
+        <span class="text-xs font-bold leading-tight">${show.showName}</span>
+        <span class="text-[10px] opacity-70">${show.network}</span>
       </div>
       <button 
         onclick="window.unsubscribe(${show.showId})"
-        class="text-xs font-semibold text-red-600 hover:text-red-700 transition-colors"
+        class="text-[10px] underline cursor-pointer group-hover:text-white"
       >
-        Unsubscribe
+        Remove
       </button>
     </div>
   `).join('');
@@ -57,15 +57,15 @@ async function searchShows() {
   if (!query) return;
 
   searchBtn.disabled = true;
-  searchBtn.textContent = 'Searching...';
-  searchResults.innerHTML = '<p class="text-stone-400 text-sm italic">Searching TVMaze...</p>';
+  searchBtn.textContent = 'Wait...';
+  searchResults.innerHTML = '<p class="text-gray-500 text-[10px] italic">Searching TVMaze database...</p>';
 
   try {
     const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-    const results = await response.json();
+    const results = response.ok ? await response.json() : [];
     renderSearchResults(results);
   } catch (error) {
-    searchResults.innerHTML = '<p class="text-red-500 text-sm">Search failed. Try again.</p>';
+    searchResults.innerHTML = '<p class="text-red-500 text-[10px]">Search failed.</p>';
   } finally {
     searchBtn.disabled = false;
     searchBtn.textContent = 'Search';
@@ -74,19 +74,21 @@ async function searchShows() {
 
 function renderSearchResults(results: any[]) {
   if (results.length === 0) {
-    searchResults.innerHTML = '<p class="text-stone-400 text-sm italic">No matches found.</p>';
+    searchResults.innerHTML = '<p class="text-gray-500 text-[10px] italic">No matches found.</p>';
     return;
   }
 
   searchResults.innerHTML = results.map(show => `
-    <div class="flex items-center gap-4 p-4 bg-stone-50 rounded-xl border border-stone-200 hover:border-stone-400 transition-colors">
-      ${show.image ? `<img src="${show.image}" class="w-12 h-16 object-cover rounded-md shadow-sm" />` : '<div class="w-12 h-16 bg-stone-200 rounded-md"></div>'}
-      <div class="flex-1">
-        <h3 class="font-bold text-sm">${show.name}</h3>
-        <p class="text-xs text-stone-500 mb-2">${show.network}</p>
+    <div class="flex gap-2 p-1 border-b border-gray-200 last:border-0">
+      ${show.image ? `<img src="${show.image}" class="w-10 h-14 object-cover border border-black" />` : '<div class="w-10 h-14 bg-gray-200 border border-black"></div>'}
+      <div class="flex-1 flex flex-col justify-between">
+        <div>
+          <h3 class="font-bold text-xs leading-tight">${show.name}</h3>
+          <p class="text-[10px] text-gray-600">${show.network}</p>
+        </div>
         <button 
           onclick="window.subscribe(${show.id}, '${show.name.replace(/'/g, "\\'")}', '${show.network.replace(/'/g, "\\'")}')"
-          class="bg-stone-900 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-stone-800 transition-colors"
+          class="win-button text-[10px] self-start"
         >
           Subscribe
         </button>

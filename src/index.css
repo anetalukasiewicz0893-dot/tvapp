@@ -2,6 +2,64 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: "MS Sans Serif", "Tahoma", "Verdana", sans-serif;
+  --color-win-bg: #c0c0c0;
+  --color-win-blue: #000080;
+  --color-win-blue-light: #1084d0;
+  --color-win-shadow: #808080;
+  --color-win-highlight: #ffffff;
+}
+
+@layer base {
+  body {
+    @apply bg-[#008080] font-sans text-black overflow-hidden h-screen;
+    background-image: url('https://win98icons.alexmeub.com/images/backgrounds/clouds.png');
+    background-size: cover;
+  }
+}
+
+@layer components {
+  .win-outset {
+    border-top: 2px solid var(--color-win-highlight);
+    border-left: 2px solid var(--color-win-highlight);
+    border-right: 2px solid var(--color-win-shadow);
+    border-bottom: 2px solid var(--color-win-shadow);
+    box-shadow: inset 1px 1px 0 0 var(--color-win-highlight), inset -1px -1px 0 0 var(--color-win-shadow);
+  }
+
+  .win-inset {
+    border-top: 2px solid var(--color-win-shadow);
+    border-left: 2px solid var(--color-win-shadow);
+    border-right: 2px solid var(--color-win-highlight);
+    border-bottom: 2px solid var(--color-win-highlight);
+    @apply bg-white;
+  }
+
+  .win-button {
+    @apply win-outset bg-win-bg px-4 py-1 active:border-win-shadow active:border-t-2 active:border-l-2 active:border-r-0 active:border-b-0 active:pt-1.5 active:pl-1.5 active:pb-0.5 active:pr-0.5;
+    outline: 1px solid black;
+  }
+
+  .win-title-bar {
+    @apply flex items-center justify-between p-1 bg-linear-to-r from-win-blue to-win-blue-light text-white font-bold text-sm select-none;
+  }
+
+  .win-window {
+    @apply win-outset bg-win-bg flex flex-col;
+    outline: 1px solid black;
+  }
+
+  .win-input {
+    @apply win-inset px-2 py-1 outline-none focus:ring-0;
+  }
+
+  .win-close-btn {
+    @apply win-outset bg-win-bg w-4 h-4 flex items-center justify-center text-black font-bold text-[10px] leading-none active:border-win-shadow active:border-t-2 active:border-l-2 active:border-r-0 active:border-b-0;
+    outline: 1px solid black;
+  }
+}
+
+@theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
