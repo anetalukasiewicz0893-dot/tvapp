@@ -25,18 +25,20 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsGrid.innerHTML = '<div class="blink" style="grid-column: 1/-1; text-align: center; font-family: \'Press Start 2P\'; font-size: 14px; padding: 40px;">UPLOADING DATA...</div>';
 
     try {
-      console.log(`Fetching: https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`);
-      const response = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`);
+      const url = `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`;
+      console.log(`[SEARCH] Fetching URL: ${url}`);
+      const response = await fetch(url);
+      
       if (!response.ok) {
-        console.error(`API Error: ${response.status} ${response.statusText}`);
-        throw new Error(`Network response was not ok: ${response.status}`);
+        console.error(`[SEARCH] API Error: ${response.status} ${response.statusText} for URL: ${url}`);
+        throw new Error(`API responded with status ${response.status}`);
       }
       
       const data = await response.json();
-      console.log(`Data received:`, data);
+      console.log(`[SEARCH] Data received:`, data);
       renderResults(data);
     } catch (error) {
-      console.error('Search failed:', error);
+      console.error('[SEARCH] Search failed:', error);
       statusField.textContent = `ERROR: ${error.message.toUpperCase()}`;
       resultsGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: red; font-family: 'Press Start 2P'; font-size: 14px; padding: 40px;">SYSTEM ERROR: ${error.message.toUpperCase()}</div>`;
     }
@@ -83,9 +85,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (testBtn) {
     testBtn.addEventListener('click', async () => {
       statusField.textContent = 'TESTING CONNECTION...';
+      const testUrl = 'https://api.tvmaze.com/search/shows?q=test';
+      console.log(`[TEST] Fetching URL: ${testUrl}`);
       try {
-        const response = await fetch('https://api.tvmaze.com/search/shows?q=test');
+        const response = await fetch(testUrl);
         if (response.ok) {
+          console.log(`[TEST] Connection successful: ${response.status} ${response.statusText}`);
           statusField.textContent = 'CONNECTION: STABLE [200 OK]';
           statusField.style.color = 'var(--neon-green)';
           setTimeout(() => {
@@ -93,10 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
             statusField.textContent = 'SYSTEM READY';
           }, 3000);
         } else {
-          throw new Error();
+          console.error(`[TEST] Connection failed: ${response.status} ${response.statusText}`);
+          throw new Error(`Status ${response.status}`);
         }
       } catch (e) {
-        statusField.textContent = 'CONNECTION: FAILED [OFFLINE]';
+        console.error('[TEST] Connection error:', e);
+        statusField.textContent = `CONNECTION: FAILED [${e.message.toUpperCase()}]`;
         statusField.style.color = 'red';
       }
     });
