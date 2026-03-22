@@ -3,11 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+    <title>TVCal - Open Source TV Calendar</title>
+    <link rel="stylesheet" href="/src/index.css" />
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body class="bg-stone-100 text-stone-900 font-sans min-h-screen">
+    <div id="root" class="max-w-2xl mx-auto px-4 py-12">
+      <header class="mb-12 text-center">
+        <h1 class="text-4xl font-bold tracking-tight mb-2">TVCal</h1>
+        <p class="text-stone-500 italic">Self-hostable, privacy-focused TV calendar sync.</p>
+      </header>
+
+      <main class="space-y-12">
+        <!-- Search Section -->
+        <section id="search-section" class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+          <label for="search-input" class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Search TV Shows</label>
+          <div class="flex gap-2">
+            <input 
+              type="text" 
+              id="search-input" 
+              placeholder="e.g. The Bear, Succession..." 
+              class="flex-1 px-4 py-2 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 transition-all"
+            />
+            <button id="search-btn" class="bg-stone-900 text-white px-6 py-2 rounded-xl hover:bg-stone-800 transition-colors">Search</button>
+          </div>
+          <div id="search-results" class="mt-6 space-y-4"></div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-4">My Subscriptions</h2>
+          <div id="user-shows" class="space-y-4">
+            <p class="text-stone-400 italic text-sm">No shows followed yet.</p>
+          </div>
+        </section>
+
+        <!-- ICS Link Section -->
+        <section id="ics-section" class="bg-stone-900 text-white p-6 rounded-2xl shadow-lg">
+          <h2 class="text-xs font-semibold uppercase tracking-wider opacity-60 mb-2">Your Personal Calendar Feed</h2>
+          <p class="text-sm mb-4 opacity-80">Copy this URL into Google Calendar, Apple Calendar, or Outlook.</p>
+          <div class="flex gap-2">
+            <input 
+              type="text" 
+              id="ics-url" 
+              readonly 
+              class="flex-1 bg-white/10 border border-white/20 px-4 py-2 rounded-xl text-sm focus:outline-none"
+            />
+            <button id="copy-btn" class="bg-white text-stone-900 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-stone-100 transition-colors">Copy</button>
+          </div>
+        </section>
+      </main>
+
+      <footer class="mt-12 text-center text-xs text-stone-400">
+        <p>Powered by <a href="https://www.tvmaze.com/api" class="underline">TVMaze API</a>. No accounts. No tracking.</p>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
 
