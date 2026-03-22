@@ -8,14 +8,16 @@
   "theme_color": "#ff71ce",
   "icons": [
     {
-      "src": "https://picsum.photos/seed/tv/192/192",
+      "src": "https://api.dicebear.com/7.x/bottts/png?seed=tv&size=192",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "https://picsum.photos/seed/tv/512/512",
+      "src": "https://api.dicebear.com/7.x/bottts/png?seed=tv&size=512",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
