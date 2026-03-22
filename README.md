@@ -34,10 +34,25 @@ A self-hostable, privacy-focused TV show calendar sync app. Search shows, subscr
 2. Set `NODE_ENV=production`.
 3. Note: SQLite persistence on Vercel is limited to the current session/instance. For true persistence, consider using a persistent volume or an external DB.
 
-## Tech Stack
-- **Frontend**: Vanilla HTML/TS/CSS (Vite)
+## 📺 TV API Configuration
+
+This application uses the **TVMaze API** by default, which is **completely free and does not require an API key** for searching shows or listing episodes.
+
+### Using a Different API (e.g., TMDB or TVPro)
+If you decide to modify the code to use a service that requires an API key:
+
+1.  **Environment Variables**: Open your `.env` file (or create one from `.env.example`).
+2.  **Add your key**:
+    ```env
+    # Example for a hypothetical TV API
+    TV_API_KEY=your_api_key_here
+    ```
+3.  **Server-side Access**: In `server.ts`, you can access this key using `process.env.TV_API_KEY`.
+
+## 🚀 Tech Stack
+- **Frontend**: Vanilla HTML/TS/CSS (Vite) with **Y2K Cyberpunk Theme**
 - **Backend**: Node.js/Express + SQLite (`better-sqlite3`)
-- **APIs**: TVMaze (Free, no key needed)
+- **APIs**: [TVMaze API](https://www.tvmaze.com/api) (Free, No Key Required)
 - **ICS**: `ical-generator`
 
 ## License

@@ -6,68 +6,79 @@
     <title>TVCal - Open Source TV Calendar</title>
     <link rel="stylesheet" href="/src/index.css" />
   </head>
-  <body class="min-h-screen flex flex-col selection:bg-brand/30">
-    <div class="flex-1 flex flex-col items-center justify-center p-6 md:p-12 lg:p-24">
-      <div class="w-full max-w-3xl glass-card p-8 md:p-16 animate-fade-in">
-        <header class="mb-16 text-center">
-          <div class="inline-flex items-center justify-center w-20 h-20 bg-brand/10 rounded-3xl mb-8 shadow-2xl shadow-brand/20 relative group">
-            <div class="absolute inset-0 bg-brand/20 blur-2xl rounded-full group-hover:bg-brand/40 transition-all duration-500"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand relative z-10"><rect width="20" height="15" x="2" y="7" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+  <body class="min-h-screen flex flex-col selection:bg-cyber/30">
+    <div class="flex-1 flex flex-col items-center justify-center p-6 md:p-12 lg:p-24 relative">
+      <!-- Decorative Y2K elements -->
+      <div class="absolute top-10 left-10 w-32 h-32 bg-brand/20 blur-3xl rounded-full animate-float"></div>
+      <div class="absolute bottom-10 right-10 w-48 h-48 bg-cyber/20 blur-3xl rounded-full animate-float" style="animation-delay: -2s"></div>
+      
+      <div class="w-full max-w-3xl y2k-card p-8 md:p-16 animate-fade-in">
+        <header class="mb-16 text-center relative">
+          <div class="inline-flex items-center justify-center w-24 h-24 bg-white/5 border-2 border-white/20 rounded-full mb-8 shadow-[0_0_30px_rgba(255,0,255,0.3)] relative group animate-float">
+            <div class="absolute inset-0 bg-brand/20 blur-xl rounded-full group-hover:bg-cyber/40 transition-all duration-700"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-brand group-hover:text-cyber transition-colors duration-700 relative z-10"><rect width="20" height="15" x="2" y="7" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
           </div>
-          <h1 class="text-5xl md:text-6xl font-black tracking-tighter mb-6 bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent">TV Calendar</h1>
-          <p class="text-white/40 text-lg md:text-xl max-w-md mx-auto leading-relaxed">Your favorite shows, synced perfectly to your personal calendar.</p>
+          <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 glossy-text italic">TV CAL</h1>
+          <p class="text-cyber/60 text-lg md:text-xl max-w-md mx-auto leading-relaxed font-medium uppercase tracking-widest">Future Vision Sync System</p>
         </header>
 
-        <div class="space-y-16">
+        <div class="space-y-20">
           <!-- Search Section -->
           <section>
-            <div class="flex items-center justify-between mb-6">
-              <h2 class="text-xs font-black uppercase tracking-[0.2em] text-brand/80">Add Shows</h2>
-              <span class="text-[10px] text-white/20 uppercase tracking-widest">TVMaze API</span>
+            <div class="flex items-center justify-between mb-8">
+              <h2 class="text-xs font-black uppercase tracking-[0.4em] text-brand">Search Database</h2>
+              <div class="h-px flex-1 bg-white/10 mx-6"></div>
+              <span class="text-[10px] text-cyber/40 uppercase tracking-widest font-bold">v2.0.0</span>
             </div>
             <div class="flex flex-col sm:flex-row gap-4">
               <input 
                 type="text" 
                 id="search-input" 
-                placeholder="Search for a show..." 
-                class="input-field flex-1"
+                placeholder="ENTER SHOW NAME..." 
+                class="input-y2k flex-1"
               />
-              <button id="search-btn" class="btn-primary">Search</button>
+              <button id="search-btn" class="btn-y2k">SCAN</button>
             </div>
-            <div id="search-results" class="mt-8 grid grid-cols-1 gap-4 max-h-80 overflow-y-auto scrollbar-sleek pr-2">
+            <div id="search-results" class="mt-10 grid grid-cols-1 gap-4 max-h-80 overflow-y-auto scrollbar-y2k pr-4">
               <!-- Results injected here -->
             </div>
           </section>
 
           <!-- Dashboard Section -->
           <section>
-            <h2 class="text-xs font-black uppercase tracking-[0.2em] text-brand/80 mb-6">My Subscriptions</h2>
-            <div id="user-shows" class="grid grid-cols-1 gap-4 min-h-[80px]">
-              <p class="text-white/20 italic text-sm py-8 text-center border-2 border-dashed border-white/5 rounded-3xl">No shows followed yet.</p>
+            <div class="flex items-center justify-between mb-8">
+              <h2 class="text-xs font-black uppercase tracking-[0.4em] text-brand">Active Uplinks</h2>
+              <div class="h-px flex-1 bg-white/10 mx-6"></div>
+            </div>
+            <div id="user-shows" class="grid grid-cols-1 gap-4 min-h-[100px]">
+              <div class="text-white/20 italic text-sm py-12 text-center border-2 border-dashed border-white/10 rounded-[2rem] bg-black/20">
+                <p class="uppercase tracking-widest font-bold opacity-50">No data streams detected</p>
+              </div>
             </div>
           </section>
 
           <!-- ICS Link Section -->
-          <section class="pt-12 border-t border-white/5">
-            <h2 class="text-xs font-black uppercase tracking-[0.2em] text-brand/80 mb-6">Calendar Feed</h2>
-            <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
-              <p class="text-white/40 text-sm mb-6 leading-relaxed">Copy this unique URL and paste it into your calendar app (Google, Apple, Outlook) to sync your schedule automatically.</p>
+          <section class="pt-16 border-t border-white/10">
+            <h2 class="text-xs font-black uppercase tracking-[0.4em] text-cyber mb-8">Calendar Protocol</h2>
+            <div class="bg-black/40 border-2 border-white/10 rounded-[2.5rem] p-10 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-cyber/5 blur-3xl rounded-full"></div>
+              <p class="text-white/40 text-sm mb-8 leading-relaxed font-medium uppercase tracking-wider">Sync your personal terminal with the global broadcast schedule.</p>
               <div class="flex flex-col sm:flex-row gap-4">
                 <input 
                   type="text" 
                   id="ics-url" 
                   readonly 
-                  class="input-field flex-1 text-xs font-mono bg-black/20 border-white/5"
+                  class="input-y2k flex-1 text-xs font-mono bg-black/60 border-white/5 text-cyber"
                 />
-                <button id="copy-btn" class="btn-primary sm:w-40">Copy Link</button>
+                <button id="copy-btn" class="btn-y2k sm:w-48">COPY LINK</button>
               </div>
             </div>
           </section>
         </div>
       </div>
 
-      <footer class="mt-16 text-center text-white/10 text-[10px] uppercase tracking-[0.3em] font-bold">
-        <p>&copy; 2026 TV Calendar &bull; Open Source Project</p>
+      <footer class="mt-16 text-center text-white/10 text-[10px] uppercase tracking-[0.5em] font-black italic">
+        <p>&copy; 2026 NEON-CAL SYNC &bull; EST. 1999</p>
       </footer>
     </div>
 
