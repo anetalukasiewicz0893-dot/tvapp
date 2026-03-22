@@ -6,217 +6,72 @@
     <title>TVCal - Open Source TV Calendar</title>
     <link rel="stylesheet" href="/src/index.css" />
   </head>
-    <body class="bg-[#008080] font-sans text-black overflow-hidden h-screen flex flex-col">
-    <!-- BIOS Loading Screen -->
-    <div id="bios-screen" class="fixed inset-0 bg-black text-white p-8 font-mono text-sm z-[100] flex flex-col gap-2">
-      <div class="flex justify-between">
-        <span>Award Modular BIOS v4.51PG</span>
-        <span>03/22/26</span>
-      </div>
-      <p>Copyright (C) 1984-2026, Award Software, Inc.</p>
-      <br/>
-      <p>TVCAL(TM) PROCESSOR AT 133MHz</p>
-      <p>Memory Test : 65536K OK</p>
-      <br/>
-      <p>Detecting IDE Primary Master ... TVCAL_HDD_01</p>
-      <p>Detecting IDE Primary Slave  ... NONE</p>
-      <p>Detecting IDE Secondary Master ... CD-ROM</p>
-      <br/>
-      <p class="animate-pulse">Loading Windows 98...</p>
-      <div class="mt-auto flex justify-between text-xs">
-        <span>Press DEL to enter SETUP</span>
-        <span>03/22/2026-TVCAL-98-Y2K</span>
-      </div>
-    </div>
-
-    <script>
-      // Hide BIOS screen after 2 seconds
-      setTimeout(() => {
-        document.getElementById('bios-screen').style.display = 'none';
-      }, 2000);
-    </script>
-    <!-- Desktop Area -->
-    <div id="desktop" class="flex-1 p-4 relative overflow-auto">
-      <!-- Desktop Icons -->
-      <div class="flex flex-col gap-8 w-20">
-        <div class="flex flex-col items-center text-center group cursor-pointer">
-          <img src="https://win98icons.alexmeub.com/images/icons/computer_explorer-5.png" class="w-8 h-8 mb-1" alt="My Computer" />
-          <span class="text-white text-[11px] px-1 group-hover:bg-win-blue">My Computer</span>
-        </div>
-        <div class="flex flex-col items-center text-center group cursor-pointer">
-          <img src="https://win98icons.alexmeub.com/images/icons/recycle_bin_empty-4.png" class="w-8 h-8 mb-1" alt="Recycle Bin" />
-          <span class="text-white text-[11px] px-1 group-hover:bg-win-blue">Recycle Bin</span>
-        </div>
-        <div class="flex flex-col items-center text-center group cursor-pointer">
-          <img src="https://win98icons.alexmeub.com/images/icons/network_neighborhood-0.png" class="w-8 h-8 mb-1" alt="Network" />
-          <span class="text-white text-[11px] px-1 group-hover:bg-win-blue">Network</span>
-        </div>
-      </div>
-
-      <!-- Main App Window -->
-      <div id="app-window" class="win-window absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-md shadow-2xl">
-        <div class="win-title-bar">
-          <div class="flex items-center gap-1">
-            <img src="https://win98icons.alexmeub.com/images/icons/television-1.png" class="w-4 h-4" alt="TV Icon" />
-            <span>TVCal.exe</span>
+  <body class="min-h-screen flex flex-col selection:bg-brand/30">
+    <div class="flex-1 flex flex-col items-center justify-center p-6 md:p-12 lg:p-24">
+      <div class="w-full max-w-3xl glass-card p-8 md:p-16 animate-fade-in">
+        <header class="mb-16 text-center">
+          <div class="inline-flex items-center justify-center w-20 h-20 bg-brand/10 rounded-3xl mb-8 shadow-2xl shadow-brand/20 relative group">
+            <div class="absolute inset-0 bg-brand/20 blur-2xl rounded-full group-hover:bg-brand/40 transition-all duration-500"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand relative z-10"><rect width="20" height="15" x="2" y="7" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
           </div>
-          <div class="flex gap-1">
-            <button class="win-close-btn" onclick="document.getElementById('app-window').classList.toggle('hidden'); document.getElementById('taskbar-item').classList.toggle('bg-gray-200'); document.getElementById('taskbar-item').classList.toggle('border-inset');">_</button>
-            <button class="win-close-btn" onclick="document.getElementById('app-window').classList.toggle('max-w-md'); document.getElementById('app-window').classList.toggle('w-full'); document.getElementById('app-window').classList.toggle('h-full'); document.getElementById('app-window').classList.toggle('top-0'); document.getElementById('app-window').classList.toggle('left-0'); document.getElementById('app-window').classList.toggle('-translate-x-1/2');">□</button>
-            <button class="win-close-btn" onclick="if(confirm('Are you sure you want to close TVCal.exe?')) document.getElementById('app-window').style.display='none'">X</button>
-          </div>
-        </div>
-        
-        <div class="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
-          <header class="mb-4">
-            <h1 class="text-2xl font-bold italic">TV Calendar v1.0</h1>
-            <div class="bg-black text-green-500 p-1 overflow-hidden whitespace-nowrap border border-win-shadow">
-              <marquee scrollamount="3" class="text-[10px] font-mono">WELCOME TO TVCAL.EXE -- SYNC YOUR FAVORITE SHOWS TO YOUR CALENDAR -- PRIVACY FOCUSED -- NO ACCOUNTS REQUIRED -- POWERED BY TVMAZE API --</marquee>
-            </div>
-          </header>
+          <h1 class="text-5xl md:text-6xl font-black tracking-tighter mb-6 bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent">TV Calendar</h1>
+          <p class="text-white/40 text-lg md:text-xl max-w-md mx-auto leading-relaxed">Your favorite shows, synced perfectly to your personal calendar.</p>
+        </header>
 
+        <div class="space-y-16">
           <!-- Search Section -->
-          <div class="win-outset p-2 space-y-2">
-            <label for="search-input" class="block text-xs font-bold">Search TV Shows:</label>
-            <div class="flex gap-1">
+          <section>
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xs font-black uppercase tracking-[0.2em] text-brand/80">Add Shows</h2>
+              <span class="text-[10px] text-white/20 uppercase tracking-widest">TVMaze API</span>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4">
               <input 
                 type="text" 
                 id="search-input" 
-                placeholder="Type show name..." 
-                class="win-input flex-1 text-sm"
+                placeholder="Search for a show..." 
+                class="input-field flex-1"
               />
-              <button id="search-btn" class="win-button text-sm">Search</button>
+              <button id="search-btn" class="btn-primary">Search</button>
             </div>
-            <div id="search-results" class="space-y-2 max-h-48 overflow-y-auto win-inset p-1 bg-white">
-              <p class="text-gray-500 text-[10px] italic">Search results will appear here...</p>
+            <div id="search-results" class="mt-8 grid grid-cols-1 gap-4 max-h-80 overflow-y-auto scrollbar-sleek pr-2">
+              <!-- Results injected here -->
             </div>
-          </div>
+          </section>
 
           <!-- Dashboard Section -->
-          <div class="win-outset p-2 space-y-2">
-            <h2 class="text-xs font-bold">My Subscriptions:</h2>
-            <div id="user-shows" class="space-y-1 win-inset p-1 bg-white min-h-[100px] overflow-y-auto">
-              <p class="text-gray-500 text-[10px] italic">No shows followed yet.</p>
+          <section>
+            <h2 class="text-xs font-black uppercase tracking-[0.2em] text-brand/80 mb-6">My Subscriptions</h2>
+            <div id="user-shows" class="grid grid-cols-1 gap-4 min-h-[80px]">
+              <p class="text-white/20 italic text-sm py-8 text-center border-2 border-dashed border-white/5 rounded-3xl">No shows followed yet.</p>
             </div>
-          </div>
+          </section>
 
           <!-- ICS Link Section -->
-          <div class="win-outset p-2 space-y-2">
-            <h2 class="text-xs font-bold">Calendar Feed (ICS):</h2>
-            <p class="text-[10px]">Paste this URL into your calendar app.</p>
-            <div class="flex gap-1">
-              <input 
-                type="text" 
-                id="ics-url" 
-                readonly 
-                class="win-input flex-1 text-xs bg-gray-100"
-              />
-              <button id="copy-btn" class="win-button text-xs">Copy</button>
+          <section class="pt-12 border-t border-white/5">
+            <h2 class="text-xs font-black uppercase tracking-[0.2em] text-brand/80 mb-6">Calendar Feed</h2>
+            <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+              <p class="text-white/40 text-sm mb-6 leading-relaxed">Copy this unique URL and paste it into your calendar app (Google, Apple, Outlook) to sync your schedule automatically.</p>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <input 
+                  type="text" 
+                  id="ics-url" 
+                  readonly 
+                  class="input-field flex-1 text-xs font-mono bg-black/20 border-white/5"
+                />
+                <button id="copy-btn" class="btn-primary sm:w-40">Copy Link</button>
+              </div>
             </div>
-          </div>
+          </section>
         </div>
+      </div>
 
-        <div class="bg-win-bg p-1 border-t border-win-shadow text-[10px] flex justify-between">
-          <span>Status: Ready</span>
-          <span>TVMaze API Connected</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Taskbar -->
-    <div id="taskbar" class="win-outset bg-win-bg h-8 flex items-center p-1 gap-1 z-50">
-      <div class="relative group">
-        <button class="win-button flex items-center gap-1 font-bold text-sm h-full px-2">
-          <img src="https://win98icons.alexmeub.com/images/icons/windows-0.png" class="w-4 h-4" alt="Start" />
-          Start
-        </button>
-        <!-- Start Menu -->
-        <div class="absolute bottom-full left-0 mb-1 w-48 win-window hidden group-hover:block">
-          <div class="flex">
-            <div class="bg-win-blue w-6 flex items-end justify-center pb-2">
-              <span class="text-white font-bold text-lg -rotate-90 origin-center whitespace-nowrap">Windows 98</span>
-            </div>
-            <div class="flex-1 py-1">
-              <div class="px-2 py-1 hover:bg-win-blue hover:text-white flex items-center gap-2 text-xs cursor-pointer">
-                <img src="https://win98icons.alexmeub.com/images/icons/programs-2.png" class="w-4 h-4" />
-                Programs
-              </div>
-              <div class="px-2 py-1 hover:bg-win-blue hover:text-white flex items-center gap-2 text-xs cursor-pointer">
-                <img src="https://win98icons.alexmeub.com/images/icons/documents-1.png" class="w-4 h-4" />
-                Documents
-              </div>
-              <div class="px-2 py-1 hover:bg-win-blue hover:text-white flex items-center gap-2 text-xs cursor-pointer">
-                <img src="https://win98icons.alexmeub.com/images/icons/settings-1.png" class="w-4 h-4" />
-                Settings
-              </div>
-              <div class="px-2 py-1 hover:bg-win-blue hover:text-white flex items-center gap-2 text-xs cursor-pointer">
-                <img src="https://win98icons.alexmeub.com/images/icons/search-2.png" class="w-4 h-4" />
-                Find
-              </div>
-              <div class="px-2 py-1 hover:bg-win-blue hover:text-white flex items-center gap-2 text-xs cursor-pointer">
-                <img src="https://win98icons.alexmeub.com/images/icons/help_book-0.png" class="w-4 h-4" />
-                Help
-              </div>
-              <div class="px-2 py-1 hover:bg-win-blue hover:text-white flex items-center gap-2 text-xs cursor-pointer">
-                <img src="https://win98icons.alexmeub.com/images/icons/run-1.png" class="w-4 h-4" />
-                Run...
-              </div>
-              <div class="border-t border-win-shadow my-1"></div>
-              <div class="px-2 py-1 hover:bg-win-blue hover:text-white flex items-center gap-2 text-xs cursor-pointer" onclick="window.location.reload()">
-                <img src="https://win98icons.alexmeub.com/images/icons/shut_down_normal-2.png" class="w-4 h-4" />
-                Shut Down...
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="w-[2px] h-full bg-win-shadow mx-1 border-l border-win-highlight"></div>
-      <div class="flex-1 flex gap-1 h-full overflow-hidden">
-        <button id="taskbar-item" class="win-button flex items-center gap-1 text-xs h-full px-2 min-w-[100px] justify-start bg-gray-200 border-inset" onclick="document.getElementById('app-window').classList.toggle('hidden'); this.classList.toggle('bg-gray-200'); this.classList.toggle('border-inset');">
-          <img src="https://win98icons.alexmeub.com/images/icons/television-1.png" class="w-3 h-3" alt="TV Icon" />
-          TVCal.exe
-        </button>
-      </div>
-      <div class="win-inset px-2 h-full flex items-center text-xs gap-2">
-        <img src="https://win98icons.alexmeub.com/images/icons/loudspeaker_rays-0.png" class="w-3 h-3" alt="Volume" />
-        <span id="clock">12:00 PM</span>
-      </div>
+      <footer class="mt-16 text-center text-white/10 text-[10px] uppercase tracking-[0.3em] font-bold">
+        <p>&copy; 2026 TV Calendar &bull; Open Source Project</p>
+      </footer>
     </div>
 
     <script type="module" src="/src/main.ts"></script>
-    <script>
-      // Simple clock for taskbar
-      function updateClock() {
-        const now = new Date();
-        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        document.getElementById('clock').textContent = time;
-      }
-      setInterval(updateClock, 1000);
-      updateClock();
-
-      // Draggable window
-      const win = document.getElementById('app-window');
-      const titleBar = win.querySelector('.win-title-bar');
-      let isDragging = false;
-      let offset = { x: 0, y: 0 };
-
-      titleBar.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offset.x = e.clientX - win.offsetLeft;
-        offset.y = e.clientY - win.offsetTop;
-        win.style.transform = 'none'; // Remove centering transform
-      });
-
-      document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        win.style.left = (e.clientX - offset.x) + 'px';
-        win.style.top = (e.clientY - offset.y) + 'px';
-      });
-
-      document.addEventListener('mouseup', () => {
-        isDragging = false;
-      });
-    </script>
   </body>
 </html>
 

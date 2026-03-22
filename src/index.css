@@ -1,178 +1,51 @@
-@import url('https://fonts.googleapis.com/css2?family=VT323&family=MS+PGothic&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "MS Sans Serif", "Tahoma", "Verdana", sans-serif;
-  --color-win-bg: #c0c0c0;
-  --color-win-blue: #000080;
-  --color-win-blue-light: #1084d0;
-  --color-win-shadow: #808080;
-  --color-win-highlight: #ffffff;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-brand: #10b981; /* Emerald 500 */
+  --color-surface: #171717; /* Neutral 900 */
+  --color-border: rgba(255, 255, 255, 0.1);
 }
 
 @layer base {
   body {
-    @apply bg-[#008080] font-sans text-black overflow-hidden h-screen;
-    background-image: url('https://win98icons.alexmeub.com/images/backgrounds/clouds.png');
-    background-size: cover;
+    @apply bg-[#0a0a0a] text-white font-sans antialiased min-h-screen selection:bg-brand/30;
+    background-image: 
+      radial-gradient(circle at 50% -20%, rgba(16, 185, 129, 0.15), transparent 80%),
+      radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.05), transparent 40%);
   }
 }
 
 @layer components {
-  .win-outset {
-    border-top: 2px solid var(--color-win-highlight);
-    border-left: 2px solid var(--color-win-highlight);
-    border-right: 2px solid var(--color-win-shadow);
-    border-bottom: 2px solid var(--color-win-shadow);
-    box-shadow: inset 1px 1px 0 0 var(--color-win-highlight), inset -1px -1px 0 0 var(--color-win-shadow);
+  .glass-card {
+    @apply bg-surface/60 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)];
   }
 
-  .win-inset {
-    border-top: 2px solid var(--color-win-shadow);
-    border-left: 2px solid var(--color-win-shadow);
-    border-right: 2px solid var(--color-win-highlight);
-    border-bottom: 2px solid var(--color-win-highlight);
-    @apply bg-white;
+  .btn-primary {
+    @apply bg-brand hover:bg-brand/90 text-black font-bold px-8 py-3 rounded-2xl transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand/20;
   }
 
-  .win-button {
-    @apply win-outset bg-win-bg px-4 py-1 active:border-win-shadow active:border-t-2 active:border-l-2 active:border-r-0 active:border-b-0 active:pt-1.5 active:pl-1.5 active:pb-0.5 active:pr-0.5;
-    outline: 1px solid black;
+  .input-field {
+    @apply bg-white/5 border border-white/10 rounded-2xl px-6 py-3 outline-none focus:border-brand/50 focus:ring-4 focus:ring-brand/10 transition-all duration-300 placeholder:text-white/20 text-white/90;
   }
 
-  .win-title-bar {
-    @apply flex items-center justify-between p-1 bg-linear-to-r from-win-blue to-win-blue-light text-white font-bold text-sm select-none;
+  .scrollbar-sleek::-webkit-scrollbar {
+    width: 4px;
   }
-
-  .win-window {
-    @apply win-outset bg-win-bg flex flex-col;
-    outline: 1px solid black;
+  .scrollbar-sleek::-webkit-scrollbar-track {
+    @apply bg-transparent;
   }
-
-  .win-input {
-    @apply win-inset px-2 py-1 outline-none focus:ring-0;
-  }
-
-  .win-close-btn {
-    @apply win-outset bg-win-bg w-4 h-4 flex items-center justify-center text-black font-bold text-[10px] leading-none active:border-win-shadow active:border-t-2 active:border-l-2 active:border-r-0 active:border-b-0;
-    outline: 1px solid black;
+  .scrollbar-sleek::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
   }
 }
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-body {
-  @apply bg-stone-100 text-stone-900;
-}
-
-@theme {
-  --font-retro: "VT323", monospace;
-  --font-ms: "MS PGothic", sans-serif;
-}
-
-@keyframes marquee {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
-
-.marquee-container {
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.marquee-content {
-  display: inline-block;
-  animation: marquee 15s linear infinite;
-}
-
-body {
-  background-color: #1a1a1a;
-  /* Emo/Scene Grid Pattern - Less Pink, More Teal/Dark */
-  background-image: 
-    linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 20px 20px;
-  background-attachment: fixed;
-  font-family: "MS PGothic", "Tahoma", sans-serif;
-  color: #fff;
-  position: relative;
-}
-
-body::after {
-  content: " ";
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 9999;
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
-}
-
-.win98-border {
-  border: 3px solid;
-  border-color: #dfdfdf #404040 #404040 #dfdfdf;
-  background: #c0c0c0;
-  color: #000;
-}
-
-.win98-header {
-  background: linear-gradient(90deg, #000080, #0000ff); /* Classic Win98 Blue or Emo Dark Blue */
-  padding: 3px 5px;
-  color: white;
-  font-weight: bold;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.win98-button {
-  border: 2px solid;
-  border-color: #ffffff #404040 #404040 #ffffff;
-  background: #c0c0c0;
-  padding: 2px 10px;
-  font-size: 12px;
-  box-shadow: 1px 1px 0 #000;
-}
-
-.win98-button:active {
-  border-color: #404040 #ffffff #ffffff #404040;
-  box-shadow: inset 1px 1px 0 #000;
-}
-
-.emo-neon {
-  color: #00ffff;
-  text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 20px #00ffff;
-}
-
-.emo-glow {
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
-}
-
-.win98-header.bg-cyan {
-  background: linear-gradient(90deg, #008080, #00ffff);
-}
-
-.win98-header.bg-lime {
-  background: linear-gradient(90deg, #008000, #00ff00);
-}
-
-.win98-header.bg-yellow {
-  background: linear-gradient(90deg, #808000, #ffff00);
-}
-
-@keyframes float {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
-}
-
-.sticker-float {
-  animation: float 6s ease-in-out infinite;
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
 }

@@ -31,19 +31,19 @@ async function fetchUserShows() {
 
 function renderUserShows(shows: any[]) {
   if (shows.length === 0) {
-    userShowsList.innerHTML = '<p class="text-gray-500 text-[10px] italic">No shows followed yet.</p>';
+    userShowsList.innerHTML = '<p class="text-white/20 italic text-sm py-4">No shows followed yet.</p>';
     return;
   }
 
   userShowsList.innerHTML = shows.map(show => `
-    <div class="flex items-center justify-between p-1 border-b border-gray-200 last:border-0 hover:bg-win-blue hover:text-white group">
+    <div class="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-colors group">
       <div class="flex flex-col">
-        <span class="text-xs font-bold leading-tight">${show.showName}</span>
-        <span class="text-[10px] opacity-70">${show.network}</span>
+        <span class="text-sm font-medium text-white/90">${show.showName}</span>
+        <span class="text-xs text-white/40">${show.network}</span>
       </div>
       <button 
         onclick="window.unsubscribe(${show.showId})"
-        class="text-[10px] underline cursor-pointer group-hover:text-white"
+        class="text-xs text-white/30 hover:text-red-400 transition-colors cursor-pointer"
       >
         Remove
       </button>
@@ -57,40 +57,45 @@ async function searchShows() {
   if (!query) return;
 
   searchBtn.disabled = true;
-  searchBtn.textContent = 'Wait...';
-  searchResults.innerHTML = '<p class="text-gray-500 text-[10px] italic">Searching TVMaze database...</p>';
+  const originalText = searchBtn.textContent;
+  searchBtn.textContent = '...';
+  searchResults.innerHTML = '<p class="text-white/30 text-sm italic animate-pulse">Searching database...</p>';
 
   try {
     const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
     const results = response.ok ? await response.json() : [];
     renderSearchResults(results);
   } catch (error) {
-    searchResults.innerHTML = '<p class="text-red-500 text-[10px]">Search failed.</p>';
+    searchResults.innerHTML = '<p class="text-red-400/80 text-sm">Search failed. Try again.</p>';
   } finally {
     searchBtn.disabled = false;
-    searchBtn.textContent = 'Search';
+    searchBtn.textContent = originalText;
   }
 }
 
 function renderSearchResults(results: any[]) {
   if (results.length === 0) {
-    searchResults.innerHTML = '<p class="text-gray-500 text-[10px] italic">No matches found.</p>';
+    searchResults.innerHTML = '<p class="text-white/30 text-sm italic">No matches found.</p>';
     return;
   }
 
   searchResults.innerHTML = results.map(show => `
-    <div class="flex gap-2 p-1 border-b border-gray-200 last:border-0">
-      ${show.image ? `<img src="${show.image}" class="w-10 h-14 object-cover border border-black" />` : '<div class="w-10 h-14 bg-gray-200 border border-black"></div>'}
-      <div class="flex-1 flex flex-col justify-between">
+    <div class="flex gap-4 p-3 bg-white/5 border border-white/5 rounded-xl hover:border-brand/30 transition-all group">
+      <div class="relative shrink-0">
+        ${show.image 
+          ? `<img src="${show.image}" class="w-12 h-16 object-cover rounded-lg shadow-lg" alt="${show.name}" />` 
+          : '<div class="w-12 h-16 bg-white/5 rounded-lg flex items-center justify-center text-[10px] text-white/20 italic">No Image</div>'}
+      </div>
+      <div class="flex-1 flex flex-col justify-between py-0.5">
         <div>
-          <h3 class="font-bold text-xs leading-tight">${show.name}</h3>
-          <p class="text-[10px] text-gray-600">${show.network}</p>
+          <h3 class="font-semibold text-sm text-white/90 leading-tight">${show.name}</h3>
+          <p class="text-xs text-white/40 mt-0.5">${show.network}</p>
         </div>
         <button 
           onclick="window.subscribe(${show.id}, '${show.name.replace(/'/g, "\\'")}', '${show.network.replace(/'/g, "\\'")}')"
-          class="win-button text-[10px] self-start"
+          class="text-xs font-semibold text-brand hover:text-brand/80 transition-colors self-start mt-2"
         >
-          Subscribe
+          + Subscribe
         </button>
       </div>
     </div>
