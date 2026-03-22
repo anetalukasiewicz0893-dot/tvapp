@@ -72,4 +72,28 @@ document.addEventListener('DOMContentLoaded', () => {
   searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') searchShows();
   });
+
+  // Test API button
+  const testBtn = document.getElementById('test-api-btn');
+  if (testBtn) {
+    testBtn.addEventListener('click', async () => {
+      statusField.textContent = 'TESTING CONNECTION...';
+      try {
+        const response = await fetch('https://api.tvmaze.com/search/shows?q=test');
+        if (response.ok) {
+          statusField.textContent = 'CONNECTION: STABLE [200 OK]';
+          statusField.style.color = 'var(--neon-green)';
+          setTimeout(() => {
+            statusField.style.color = '';
+            statusField.textContent = 'SYSTEM READY';
+          }, 3000);
+        } else {
+          throw new Error();
+        }
+      } catch (e) {
+        statusField.textContent = 'CONNECTION: FAILED [OFFLINE]';
+        statusField.style.color = 'red';
+      }
+    });
+  }
 });

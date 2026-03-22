@@ -8,6 +8,12 @@ A minimal, early-2000s style TV show search engine powered by the [TVMaze API](h
 - **Client-Side Only**: No backend required.
 - **Zero Config**: Deployable to Vercel with zero configuration.
 
+## API Integration
+The app is pre-configured to connect to the **TVMaze API**. 
+- **Endpoint**: `https://api.tvmaze.com/search/shows?q=`
+- **Authentication**: None required (Public API).
+- **Test Connection**: Use the **TEST** button in the app to verify connectivity to the TVMaze servers.
+
 ## How to Deploy to Vercel
 1.  **Clone or Download** this repository.
 2.  **Install the Vercel CLI** (optional): `npm install -g vercel`.
