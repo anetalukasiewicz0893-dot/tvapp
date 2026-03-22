@@ -206,12 +206,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const blob = new Blob([icsContent.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(blob);
-    link.setAttribute('download', 'tv_schedule.ics');
+    link.setAttribute('download', 'tv_schedule.ical');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     
-    statusField.textContent = 'ICAL EXPORTED SUCCESSFULLY';
+    statusField.textContent = 'ICAL EXPORTED SUCCESSFULLY (.ICAL)';
   };
 
   exportBtn.addEventListener('click', generateICal);

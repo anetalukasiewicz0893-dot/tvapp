@@ -43,7 +43,10 @@
         </div>
 
         <div id="subs-view" style="display: none;">
-          <button id="export-ical-btn" class="btn-export">EXPORT ALL TO ICAL</button>
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+            <button id="export-ical-btn" class="btn-export">EXPORT ALL TO .ICAL</button>
+            <a href="https://calendar.google.com/calendar/r/settings/export" target="_blank" style="font-size: 10px; color: var(--neon-purple); text-decoration: underline;">OPEN GOOGLE CALENDAR IMPORT</a>
+          </div>
           <div id="subs-grid" class="results-grid">
             <!-- Subscriptions injected here -->
             <div style="grid-column: 1/-1; text-align: center; font-family: 'Press Start 2P'; font-size: 14px; padding: 40px; color: var(--win-border-dark);">
