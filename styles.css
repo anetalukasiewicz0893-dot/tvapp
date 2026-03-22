@@ -1,15 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 
 :root {
-  --bg-color: #000080; /* Classic Win95 blue */
-  --win-bg: #c0c0c0;
+  --bg-color: #ffb7c5; /* Soft Tumblr Pink */
+  --win-bg: rgba(255, 255, 255, 0.85);
   --win-border-light: #ffffff;
-  --win-border-dark: #808080;
-  --win-border-black: #000000;
-  --neon-green: #00ff00;
-  --neon-pink: #ff00ff;
-  --neon-cyan: #00ffff;
-  --text-color: #000000;
+  --win-border-dark: #d1d1d1;
+  --win-border-black: #444444;
+  --neon-green: #00ffcc; /* Minty Cyan */
+  --neon-pink: #ff71ce; /* Vaporwave Pink */
+  --neon-purple: #b967ff;
+  --neon-cyan: #01cdfe;
+  --text-color: #333333;
+  --glass-bg: rgba(255, 255, 255, 0.7);
 }
 
 * {
@@ -19,38 +21,82 @@
 }
 
 body {
-  background-color: var(--bg-color);
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+  background-attachment: fixed;
   font-family: 'VT323', monospace;
   color: var(--text-color);
   padding: 20px;
-  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/svg%3E");
+  min-height: 100vh;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  z-index: 9999;
 }
 
 .desktop {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
+}
+
+/* Tab System */
+.tabs {
+  display: flex;
+  margin-bottom: -2px;
+  padding-left: 10px;
+}
+
+.tab {
+  padding: 8px 20px;
+  background-color: var(--win-bg);
+  border: 2px solid var(--win-border-light);
+  border-bottom: none;
+  box-shadow: 1px -1px 0 var(--win-border-black);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  cursor: pointer;
+  margin-right: 5px;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s;
+  color: #666;
+}
+
+.tab.active {
+  background-color: white;
+  color: var(--neon-pink);
+  padding-top: 12px;
+  margin-top: -4px;
+  z-index: 2;
 }
 
 /* Window Style */
 .window {
   background-color: var(--win-bg);
+  backdrop-filter: blur(10px);
   border: 2px solid var(--win-border-light);
-  box-shadow: 1px 1px 0 var(--win-border-black),
-              -1px -1px 0 var(--win-border-light),
-              inset 1px 1px 0 var(--win-border-light),
-              inset -1px -1px 0 var(--win-border-dark);
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
+  border-radius: 0 8px 8px 8px;
 }
 
 .window-header {
-  background: linear-gradient(90deg, #000080, #1084d0);
+  background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
   color: white;
-  padding: 4px 8px;
+  padding: 6px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-family: 'Press Start 2P', cursive;
   font-size: 10px;
+  text-shadow: 1px 1px black;
 }
 
 .window-controls span {
@@ -75,22 +121,23 @@ body {
 /* Header/Title */
 h1 {
   font-family: 'Press Start 2P', cursive;
-  font-size: 24px;
+  font-size: 28px;
   text-align: center;
-  color: var(--neon-green);
-  text-shadow: 3px 3px var(--neon-pink);
-  margin-bottom: 10px;
-  letter-spacing: -2px;
+  color: white;
+  text-shadow: 4px 4px var(--neon-pink), -2px -2px var(--neon-cyan);
+  margin-bottom: 15px;
+  letter-spacing: -1px;
 }
 
 .marquee {
-  background: black;
-  color: var(--neon-cyan);
-  padding: 5px;
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--neon-green);
+  padding: 8px;
   overflow: hidden;
   white-space: nowrap;
-  border: 1px inset var(--win-border-dark);
+  border: 2px solid var(--neon-purple);
   margin-bottom: 20px;
+  border-radius: 4px;
 }
 
 .marquee p {
@@ -123,24 +170,46 @@ input[type="text"] {
 
 button {
   padding: 8px 16px;
-  background-color: var(--win-bg);
-  border: 2px solid var(--win-border-light);
-  box-shadow: 1px 1px 0 var(--win-border-black),
-              inset 1px 1px 0 var(--win-border-light);
+  background-color: white;
+  border: 2px solid var(--neon-pink);
+  box-shadow: 4px 4px 0 var(--neon-purple);
   font-family: 'Press Start 2P', cursive;
-  font-size: 10px;
+  font-size: 8px;
   cursor: pointer;
   outline: none;
+  color: var(--neon-pink);
+  transition: all 0.1s;
 }
 
 button:active {
-  box-shadow: inset 1px 1px 2px var(--win-border-dark);
-  transform: translate(1px, 1px);
+  box-shadow: 0 0 0 var(--neon-purple);
+  transform: translate(4px, 4px);
 }
 
 button:hover {
-  background-color: #dfdfdf;
-  color: var(--neon-pink);
+  background-color: var(--neon-pink);
+  color: white;
+}
+
+.btn-subscribe {
+  margin-top: 10px;
+  width: 100%;
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 4px 4px 0 var(--neon-purple);
+}
+
+.btn-subscribe.active {
+  background-color: var(--neon-cyan);
+  color: white;
+}
+
+.btn-export {
+  background-color: var(--neon-green);
+  color: #333;
+  border-color: #333;
+  box-shadow: 4px 4px 0 #333;
+  margin-bottom: 20px;
 }
 
 /* Results */

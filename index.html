@@ -8,9 +8,13 @@
 </head>
 <body>
   <div class="desktop">
+    <div class="tabs">
+      <div class="tab active" id="tab-search">SEARCH</div>
+      <div class="tab" id="tab-subs">MY SUBS</div>
+    </div>
     <div class="window">
       <div class="window-header">
-        <div class="window-title">TV_SEARCH.EXE</div>
+        <div class="window-title">TV_VIBE.EXE</div>
         <div class="window-controls">
           <span>_</span>
           <span>□</span>
@@ -18,21 +22,33 @@
         </div>
       </div>
       <div class="window-body">
-        <h1>Y2K TV SEARCH</h1>
+        <h1>Y2K TV VIBE</h1>
         <div class="marquee">
-          <p>*** WELCOME TO THE FUTURE OF TELEVISION SEARCH *** POWERED BY TVMAZE API *** EST. 2000 *** NO COOKIES *** NO TRACKING *** JUST PURE DATA ***</p>
+          <p>*** VAPORWAVE EDITION *** SUBSCRIBE TO YOUR FAVORITE SHOWS *** EXPORT TO GOOGLE CALENDAR *** STAY AESTHETIC ***</p>
         </div>
 
-        <div class="search-container">
-          <input type="text" id="search-input" placeholder="ENTER SHOW NAME..." autofocus>
-          <button id="search-btn">SEARCH</button>
-          <button id="test-api-btn" style="background-color: #eee; color: #666; font-size: 8px;">TEST</button>
+        <div id="search-view">
+          <div class="search-container">
+            <input type="text" id="search-input" placeholder="ENTER SHOW NAME..." autofocus>
+            <button id="search-btn">SEARCH</button>
+            <button id="test-api-btn" style="background-color: #eee; color: #666; font-size: 8px;">TEST</button>
+          </div>
+
+          <div id="results-grid" class="results-grid">
+            <!-- Results injected here -->
+            <div style="grid-column: 1/-1; text-align: center; font-family: 'Press Start 2P'; font-size: 14px; padding: 40px; color: var(--win-border-dark);">
+              READY TO SCAN...
+            </div>
+          </div>
         </div>
 
-        <div id="results-grid" class="results-grid">
-          <!-- Results injected here -->
-          <div style="grid-column: 1/-1; text-align: center; font-family: 'Press Start 2P'; font-size: 14px; padding: 40px; color: var(--win-border-dark);">
-            READY TO SCAN...
+        <div id="subs-view" style="display: none;">
+          <button id="export-ical-btn" class="btn-export">EXPORT ALL TO ICAL</button>
+          <div id="subs-grid" class="results-grid">
+            <!-- Subscriptions injected here -->
+            <div style="grid-column: 1/-1; text-align: center; font-family: 'Press Start 2P'; font-size: 14px; padding: 40px; color: var(--win-border-dark);">
+              NO SUBSCRIPTIONS YET...
+            </div>
           </div>
         </div>
       </div>
