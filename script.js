@@ -1,8 +1,3 @@
-import { 
-  auth, db, provider, signInWithPopup, signOut, onAuthStateChanged, 
-  collection, addDoc, query, where, onSnapshot, deleteDoc, doc, getDocs, serverTimestamp 
-} from './firebase.ts';
-
 document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('search-input');
   const searchBtn = document.getElementById('search-btn');
@@ -15,91 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchView = document.getElementById('search-view');
   const subsView = document.getElementById('subs-view');
   const exportBtn = document.getElementById('export-ical-btn');
-  const loginBtn = document.getElementById('login-btn');
 
-  let subscriptions = [];
-  let currentUser = null;
-  let unsubscribeSubs = null;
-
-  // Error Handler
-  const handleFirestoreError = (error, operationType, path) => {
-    const errInfo = {
-      error: error instanceof Error ? error.message : String(error),
-      authInfo: {
-        userId: auth.currentUser?.uid,
-        email: auth.currentUser?.email,
-      },
-      operationType,
-      path
-    };
-    console.error('Firestore Error: ', JSON.stringify(errInfo));
-    statusField.textContent = `ERROR: ${operationType.toUpperCase()} FAILED`;
-    statusField.style.color = 'red';
-  };
-
-  // Auth Logic
-  onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-    if (user) {
-      loginBtn.textContent = 'LOGOUT';
-      statusField.textContent = `WELCOME, ${user.displayName.toUpperCase()}`;
-      setupSubscriptionsListener(user.uid);
-    } else {
-      loginBtn.textContent = 'LOGIN';
-      statusField.textContent = 'SYSTEM READY [GUEST MODE]';
-      subscriptions = [];
-      if (unsubscribeSubs) unsubscribeSubs();
-      renderSubscriptions();
-      if (searchView.style.display === 'block') {
-        // Refresh search results to update buttons
-        const lastResults = resultsGrid.querySelectorAll('.show-card');
-        if (lastResults.length > 0) {
-          // This is a bit hacky, but we just want to update the buttons
-          // In a real app we'd re-render the search results from a stored array
-        }
-      }
-    }
-  });
-
-  loginBtn.addEventListener('click', async () => {
-    if (currentUser) {
-      await signOut(auth);
-    } else {
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (error) {
-        console.error('Login failed:', error);
-        statusField.textContent = 'LOGIN FAILED';
-      }
-    }
-  });
-
-  const setupSubscriptionsListener = (userId) => {
-    if (unsubscribeSubs) unsubscribeSubs();
-    
-    const q = query(collection(db, 'subscriptions'), where('userId', '==', userId));
-    unsubscribeSubs = onSnapshot(q, (snapshot) => {
-      subscriptions = snapshot.docs.map(doc => ({
-        docId: doc.id,
-        ...doc.data().showData
-      }));
-      
-      if (subsView.style.display === 'block') {
-        renderSubscriptions();
-      } else {
-        // Update search results buttons if any
-        const buttons = resultsGrid.querySelectorAll('.btn-subscribe');
-        buttons.forEach(btn => {
-          const id = parseInt(btn.dataset.id);
-          const isSubbed = subscriptions.some(s => s.id === id);
-          btn.textContent = isSubbed ? 'UNSUBSCRIBE' : 'SUBSCRIBE';
-          btn.classList.toggle('active', isSubbed);
-        });
-      }
-    }, (error) => {
-      handleFirestoreError(error, 'list', 'subscriptions');
-    });
-  };
+  let subscriptions = JSON.parse(localStorage.getItem('tv_subs') || '[]');
 
   // Tab Switching
   tabSearch.addEventListener('click', () => {
@@ -107,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tabSubs.classList.remove('active');
     searchView.style.display = 'block';
     subsView.style.display = 'none';
-    statusField.textContent = currentUser ? `LOGGED IN AS: ${currentUser.displayName.toUpperCase()}` : 'SYSTEM READY';
+    statusField.textContent = 'SYSTEM READY';
   });
 
   tabSubs.addEventListener('click', () => {
@@ -127,56 +39,39 @@ document.addEventListener('DOMContentLoaded', () => {
   updateTime();
 
   // Subscription Logic
-  const toggleSubscription = async (show) => {
-    if (!currentUser) {
-      statusField.textContent = 'ERROR: LOGIN REQUIRED TO SAVE';
-      statusField.style.color = 'red';
-      setTimeout(() => statusField.style.color = '', 2000);
-      return;
+  const toggleSubscription = (show) => {
+    const index = subscriptions.findIndex(s => s.id === show.id);
+    if (index === -1) {
+      subscriptions.push(show);
+      statusField.textContent = `SUBSCRIBED TO: ${show.name.toUpperCase()}`;
+    } else {
+      subscriptions.splice(index, 1);
+      statusField.textContent = `UNSUBSCRIBED FROM: ${show.name.toUpperCase()}`;
     }
-
-    const existingSub = subscriptions.find(s => s.id === show.id);
+    localStorage.setItem('tv_subs', JSON.stringify(subscriptions));
     
-    try {
-      if (!existingSub) {
-        statusField.textContent = `SAVING: ${show.name.toUpperCase()}...`;
-        await addDoc(collection(db, 'subscriptions'), {
-          userId: currentUser.uid,
-          showId: show.id,
-          showData: show,
-          createdAt: serverTimestamp()
-        });
-        statusField.textContent = `SAVED: ${show.name.toUpperCase()}`;
-      } else {
-        statusField.textContent = `REMOVING: ${show.name.toUpperCase()}...`;
-        // We need to find the document ID to delete it
-        const q = query(collection(db, 'subscriptions'), 
-                        where('userId', '==', currentUser.uid), 
-                        where('showId', '==', show.id));
-        const snapshot = await getDocs(q);
-        snapshot.forEach(async (docSnap) => {
-          await deleteDoc(doc(db, 'subscriptions', docSnap.id));
-        });
-        statusField.textContent = `REMOVED: ${show.name.toUpperCase()}`;
+    // Re-render current view
+    if (subsView.style.display === 'block') {
+      renderSubscriptions();
+    } else {
+      // Find and update the button in the search results
+      const btn = document.querySelector(`button[data-id="${show.id}"]`);
+      if (btn) {
+        const isSubbed = subscriptions.some(s => s.id === show.id);
+        btn.textContent = isSubbed ? 'UNSUBSCRIBE' : 'SUBSCRIBE';
+        btn.classList.toggle('active', isSubbed);
       }
-    } catch (error) {
-      handleFirestoreError(error, 'write', 'subscriptions');
     }
   };
 
   const renderSubscriptions = () => {
-    if (!currentUser) {
-      subsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; font-family: \'Press Start 2P\'; font-size: 14px; padding: 40px; color: var(--win-border-dark);">PLEASE LOGIN TO VIEW SAVED SHOWS</div>';
-      return;
-    }
-
     if (subscriptions.length === 0) {
-      statusField.textContent = '0 SAVED SHOWS';
-      subsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; font-family: \'Press Start 2P\'; font-size: 14px; padding: 40px; color: var(--win-border-dark);">NO SAVED SHOWS YET...</div>';
+      statusField.textContent = '0 SUBSCRIPTIONS';
+      subsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; font-family: \'Press Start 2P\'; font-size: 14px; padding: 40px; color: var(--win-border-dark);">NO SUBSCRIPTIONS YET...</div>';
       return;
     }
 
-    statusField.textContent = `${subscriptions.length} SHOWS SAVED`;
+    statusField.textContent = `${subscriptions.length} SUBSCRIPTIONS ACTIVE`;
     subsGrid.innerHTML = subscriptions.map(show => renderShowCard(show, true)).join('');
     attachCardListeners(subsGrid, subscriptions);
   };
@@ -337,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
           statusField.style.color = 'var(--neon-green)';
           setTimeout(() => {
             statusField.style.color = '';
-            statusField.textContent = currentUser ? `LOGGED IN AS: ${currentUser.displayName.toUpperCase()}` : 'SYSTEM READY';
+            statusField.textContent = 'SYSTEM READY';
           }, 3000);
         } else {
           throw new Error(`Status ${response.status}`);
