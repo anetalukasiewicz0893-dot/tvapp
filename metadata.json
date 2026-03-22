@@ -1,5 +1,5 @@
 {
-  "name": "TVCal Open Source",
-  "description": "A self-hostable TV show calendar sync app. Search shows, subscribe, and get a personal ICS feed for your calendar.",
+  "name": "Y2K TV SEARCH",
+  "description": "A minimal, early-2000s style TV show search engine powered by the TVMaze API.",
   "requestFramePermissions": []
 }
