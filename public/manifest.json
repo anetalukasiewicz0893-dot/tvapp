@@ -1,0 +1,21 @@
+{
+  "name": "TV Tracker",
+  "short_name": "TV Tracker",
+  "description": "Retro TV Show Tracker and Schedule Exporter",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffb7c5",
+  "theme_color": "#ff71ce",
+  "icons": [
+    {
+      "src": "https://picsum.photos/seed/tv/192/192",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://picsum.photos/seed/tv/512/512",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
