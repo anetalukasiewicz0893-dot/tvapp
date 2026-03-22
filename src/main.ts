@@ -2,26 +2,43 @@ import { v4 as uuidv4 } from 'uuid';
 
 const searchInput = document.getElementById('search-input') as HTMLInputElement;
 const searchBtn = document.getElementById('search-btn') as HTMLButtonElement;
+const testApiBtn = document.getElementById('test-api-btn') as HTMLButtonElement;
 const searchResults = document.getElementById('search-results') as HTMLDivElement;
 const userShowsList = document.getElementById('user-shows') as HTMLDivElement;
 const icsUrlInput = document.getElementById('ics-url') as HTMLInputElement;
 const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement;
 
 // User ID logic
-let userId = localStorage.getItem('tvcal_user_id');
-if (!userId) {
-  userId = uuidv4();
-  localStorage.setItem('tvcal_user_id', userId);
-}
+const urlParams = new URLSearchParams(window.location.search);
+let userId = urlParams.get('user') || localStorage.getItem('tvcal_user_id');
 
-// Set ICS URL
-const currentOrigin = window.location.origin;
-icsUrlInput.value = `${currentOrigin}/ics/${userId}`;
+async function initUser() {
+  if (!userId) {
+    try {
+      const response = await fetch('/user');
+      const data = await response.json();
+      userId = data.userId;
+      if (userId) localStorage.setItem('tvcal_user_id', userId);
+    } catch (error) {
+      console.error('Failed to get user ID', error);
+      userId = 'default-user'; // Fallback
+    }
+  } else {
+    localStorage.setItem('tvcal_user_id', userId);
+  }
+  
+  // Set ICS URL
+  const currentOrigin = window.location.origin;
+  icsUrlInput.value = `${currentOrigin}/ics/${userId}`;
+  
+  fetchUserShows();
+}
 
 // Fetch user shows
 async function fetchUserShows() {
+  if (!userId) return;
   try {
-    const response = await fetch(`/api/shows?user=${userId}`);
+    const response = await fetch(`/shows/${userId}`);
     const shows = await response.json();
     renderUserShows(shows);
   } catch (error) {
@@ -31,21 +48,25 @@ async function fetchUserShows() {
 
 function renderUserShows(shows: any[]) {
   if (shows.length === 0) {
-    userShowsList.innerHTML = '<p class="text-white/20 italic text-sm py-4">No shows followed yet.</p>';
+    userShowsList.innerHTML = `
+      <div class="text-white/20 italic text-sm py-12 text-center border-2 border-dashed border-white/10 rounded-[2rem] bg-black/20">
+        <p class="uppercase tracking-widest font-bold opacity-50">No data streams detected</p>
+      </div>
+    `;
     return;
   }
 
   userShowsList.innerHTML = shows.map(show => `
-    <div class="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-colors group">
+    <div class="flex items-center justify-between p-6 bg-white/5 border-2 border-white/10 rounded-[2rem] hover:bg-white/10 transition-all group animate-fade-in">
       <div class="flex flex-col">
-        <span class="text-sm font-medium text-white/90">${show.showName}</span>
-        <span class="text-xs text-white/40">${show.network}</span>
+        <span class="text-lg font-black text-white italic uppercase tracking-tight">${show.showName}</span>
+        <span class="text-xs text-cyber/60 font-bold uppercase tracking-widest">${show.network}</span>
       </div>
       <button 
         onclick="window.unsubscribe(${show.showId})"
-        class="text-xs text-white/30 hover:text-red-400 transition-colors cursor-pointer"
+        class="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-brand transition-colors cursor-pointer italic"
       >
-        Remove
+        [ DISCONNECT ]
       </button>
     </div>
   `).join('');
@@ -62,7 +83,7 @@ async function searchShows() {
   searchResults.innerHTML = '<p class="text-white/30 text-sm italic animate-pulse">Searching database...</p>';
 
   try {
-    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+    const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
     const results = response.ok ? await response.json() : [];
     renderSearchResults(results);
   } catch (error) {
@@ -75,37 +96,41 @@ async function searchShows() {
 
 function renderSearchResults(results: any[]) {
   if (results.length === 0) {
-    searchResults.innerHTML = '<p class="text-white/30 text-sm italic">No matches found.</p>';
+    searchResults.innerHTML = '<p class="text-white/30 text-xs uppercase tracking-widest font-bold italic">No matches found in archive.</p>';
     return;
   }
 
-  searchResults.innerHTML = results.map(show => `
-    <div class="flex gap-4 p-3 bg-white/5 border border-white/5 rounded-xl hover:border-brand/30 transition-all group">
+  searchResults.innerHTML = results.map(show => {
+    const nextAirDate = show.nextAir !== 'N/A' ? new Date(show.nextAir).toLocaleDateString() : 'N/A';
+    
+    return `
+    <div class="flex gap-6 p-6 bg-black/40 border-2 border-white/10 rounded-[2rem] hover:border-cyber/40 transition-all group animate-fade-in">
       <div class="relative shrink-0">
         ${show.image 
-          ? `<img src="${show.image}" class="w-12 h-16 object-cover rounded-lg shadow-lg" alt="${show.name}" />` 
-          : '<div class="w-12 h-16 bg-white/5 rounded-lg flex items-center justify-center text-[10px] text-white/20 italic">No Image</div>'}
+          ? `<img src="${show.image}" class="w-16 h-24 object-cover rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-white/10" alt="${show.name}" />` 
+          : '<div class="w-16 h-24 bg-white/5 rounded-2xl flex items-center justify-center text-[10px] text-white/20 italic border border-white/10">NO SIGNAL</div>'}
       </div>
-      <div class="flex-1 flex flex-col justify-between py-0.5">
+      <div class="flex-1 flex flex-col justify-between py-1">
         <div>
-          <h3 class="font-semibold text-sm text-white/90 leading-tight">${show.name}</h3>
-          <p class="text-xs text-white/40 mt-0.5">${show.network}</p>
+          <h3 class="font-black text-xl text-white italic uppercase tracking-tight leading-none">${show.name}</h3>
+          <p class="text-[10px] text-cyber/60 font-bold uppercase tracking-widest mt-2">${show.network}</p>
+          <p class="text-[10px] text-brand/60 font-bold uppercase tracking-widest mt-1">Next Air: ${nextAirDate}</p>
         </div>
         <button 
           onclick="window.subscribe(${show.id}, '${show.name.replace(/'/g, "\\'")}', '${show.network.replace(/'/g, "\\'")}')"
-          class="text-xs font-semibold text-brand hover:text-brand/80 transition-colors self-start mt-2"
+          class="text-xs font-black text-brand hover:text-cyber transition-colors self-start mt-4 uppercase tracking-widest italic"
         >
-          + Subscribe
+          + UPLINK
         </button>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 // Global actions
 (window as any).subscribe = async (showId: number, showName: string, network: string) => {
   try {
-    const response = await fetch('/api/subscribe', {
+    const response = await fetch('/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, showId, showName, network })
@@ -122,8 +147,8 @@ function renderSearchResults(results: any[]) {
 
 (window as any).unsubscribe = async (showId: number) => {
   try {
-    const response = await fetch('/api/unsubscribe', {
-      method: 'POST',
+    const response = await fetch('/unsubscribe', {
+      method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, showId })
     });
@@ -137,6 +162,10 @@ function renderSearchResults(results: any[]) {
 
 // Event listeners
 searchBtn.addEventListener('click', searchShows);
+testApiBtn.addEventListener('click', () => {
+  searchInput.value = 'Batman';
+  searchShows();
+});
 searchInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') searchShows();
 });
@@ -144,9 +173,10 @@ searchInput.addEventListener('keypress', (e) => {
 copyBtn.addEventListener('click', () => {
   icsUrlInput.select();
   document.execCommand('copy');
-  copyBtn.textContent = 'Copied!';
-  setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+  const originalText = copyBtn.textContent;
+  copyBtn.textContent = 'COPIED!';
+  setTimeout(() => copyBtn.textContent = originalText, 2000);
 });
 
 // Initial load
-fetchUserShows();
+initUser();

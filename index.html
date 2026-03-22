@@ -37,7 +37,10 @@
                 placeholder="ENTER SHOW NAME..." 
                 class="input-y2k flex-1"
               />
-              <button id="search-btn" class="btn-y2k">SCAN</button>
+              <div class="flex gap-2">
+                <button id="search-btn" class="btn-y2k flex-1 sm:flex-none">SCAN</button>
+                <button id="test-api-btn" class="btn-y2k bg-cyber/20 hover:bg-cyber/40 border-2 border-cyber/20 text-cyber shadow-none hover:shadow-[0_0_20px_rgba(0,255,255,0.2)]">TEST</button>
+              </div>
             </div>
             <div id="search-results" class="mt-10 grid grid-cols-1 gap-4 max-h-80 overflow-y-auto scrollbar-y2k pr-4">
               <!-- Results injected here -->
@@ -77,8 +80,14 @@
         </div>
       </div>
 
-      <footer class="mt-16 text-center text-white/10 text-[10px] uppercase tracking-[0.5em] font-black italic">
-        <p>&copy; 2026 NEON-CAL SYNC &bull; EST. 1999</p>
+      <footer class="mt-16 text-center space-y-4">
+        <div class="flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.3em] font-black italic text-cyber/40">
+          <span class="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_#00ff00]"></span>
+          <span>API UPLINK: STABLE // TVMAZE.COM</span>
+        </div>
+        <p class="text-white/10 text-[10px] uppercase tracking-[0.5em] font-black italic">
+          &copy; 2026 NEON-CAL SYNC &bull; EST. 1999 &bull; POWERED BY <a href="https://www.tvmaze.com/api" target="_blank" class="hover:text-brand transition-colors">TVMAZE</a>
+        </p>
       </footer>
     </div>
 
