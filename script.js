@@ -1,3 +1,8 @@
+import { 
+  auth, db, provider, signInWithPopup, signOut, onAuthStateChanged, 
+  collection, addDoc, query, where, onSnapshot, deleteDoc, doc, getDocs, serverTimestamp 
+} from './firebase.ts';
+
 document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('search-input');
   const searchBtn = document.getElementById('search-btn');
@@ -10,8 +15,91 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchView = document.getElementById('search-view');
   const subsView = document.getElementById('subs-view');
   const exportBtn = document.getElementById('export-ical-btn');
+  const loginBtn = document.getElementById('login-btn');
 
-  let subscriptions = JSON.parse(localStorage.getItem('tv_subs') || '[]');
+  let subscriptions = [];
+  let currentUser = null;
+  let unsubscribeSubs = null;
+
+  // Error Handler
+  const handleFirestoreError = (error, operationType, path) => {
+    const errInfo = {
+      error: error instanceof Error ? error.message : String(error),
+      authInfo: {
+        userId: auth.currentUser?.uid,
+        email: auth.currentUser?.email,
+      },
+      operationType,
+      path
+    };
+    console.error('Firestore Error: ', JSON.stringify(errInfo));
+    statusField.textContent = `ERROR: ${operationType.toUpperCase()} FAILED`;
+    statusField.style.color = 'red';
+  };
+
+  // Auth Logic
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    if (user) {
+      loginBtn.textContent = 'LOGOUT';
+      statusField.textContent = `WELCOME, ${user.displayName.toUpperCase()}`;
+      setupSubscriptionsListener(user.uid);
+    } else {
+      loginBtn.textContent = 'LOGIN';
+      statusField.textContent = 'SYSTEM READY [GUEST MODE]';
+      subscriptions = [];
+      if (unsubscribeSubs) unsubscribeSubs();
+      renderSubscriptions();
+      if (searchView.style.display === 'block') {
+        // Refresh search results to update buttons
+        const lastResults = resultsGrid.querySelectorAll('.show-card');
+        if (lastResults.length > 0) {
+          // This is a bit hacky, but we just want to update the buttons
+          // In a real app we'd re-render the search results from a stored array
+        }
+      }
+    }
+  });
+
+  loginBtn.addEventListener('click', async () => {
+    if (currentUser) {
+      await signOut(auth);
+    } else {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error('Login failed:', error);
+        statusField.textContent = 'LOGIN FAILED';
+      }
+    }
+  });
+
+  const setupSubscriptionsListener = (userId) => {
+    if (unsubscribeSubs) unsubscribeSubs();
+    
+    const q = query(collection(db, 'subscriptions'), where('userId', '==', userId));
+    unsubscribeSubs = onSnapshot(q, (snapshot) => {
+      subscriptions = snapshot.docs.map(doc => ({
+        docId: doc.id,
+        ...doc.data().showData
+      }));
+      
+      if (subsView.style.display === 'block') {
+        renderSubscriptions();
+      } else {
+        // Update search results buttons if any
+        const buttons = resultsGrid.querySelectorAll('.btn-subscribe');
+        buttons.forEach(btn => {
+          const id = parseInt(btn.dataset.id);
+          const isSubbed = subscriptions.some(s => s.id === id);
+          btn.textContent = isSubbed ? 'UNSUBSCRIBE' : 'SUBSCRIBE';
+          btn.classList.toggle('active', isSubbed);
+        });
+      }
+    }, (error) => {
+      handleFirestoreError(error, 'list', 'subscriptions');
+    });
+  };
 
   // Tab Switching
   tabSearch.addEventListener('click', () => {
@@ -19,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tabSubs.classList.remove('active');
     searchView.style.display = 'block';
     subsView.style.display = 'none';
-    statusField.textContent = 'SYSTEM READY';
+    statusField.textContent = currentUser ? `LOGGED IN AS: ${currentUser.displayName.toUpperCase()}` : 'SYSTEM READY';
   });
 
   tabSubs.addEventListener('click', () => {
@@ -39,66 +127,80 @@ document.addEventListener('DOMContentLoaded', () => {
   updateTime();
 
   // Subscription Logic
-  const toggleSubscription = (show) => {
-    const index = subscriptions.findIndex(s => s.id === show.id);
-    if (index === -1) {
-      subscriptions.push(show);
-      statusField.textContent = `SUBSCRIBED TO: ${show.name.toUpperCase()}`;
-    } else {
-      subscriptions.splice(index, 1);
-      statusField.textContent = `UNSUBSCRIBED FROM: ${show.name.toUpperCase()}`;
+  const toggleSubscription = async (show) => {
+    if (!currentUser) {
+      statusField.textContent = 'ERROR: LOGIN REQUIRED TO SAVE';
+      statusField.style.color = 'red';
+      setTimeout(() => statusField.style.color = '', 2000);
+      return;
     }
-    localStorage.setItem('tv_subs', JSON.stringify(subscriptions));
+
+    const existingSub = subscriptions.find(s => s.id === show.id);
     
-    // Re-render current view
-    if (subsView.style.display === 'block') {
-      renderSubscriptions();
-    } else {
-      // Find and update the button in the search results
-      const btn = document.querySelector(`button[data-id="${show.id}"]`);
-      if (btn) {
-        const isSubbed = subscriptions.some(s => s.id === show.id);
-        btn.textContent = isSubbed ? 'UNSUBSCRIBE' : 'SUBSCRIBE';
-        btn.classList.toggle('active', isSubbed);
+    try {
+      if (!existingSub) {
+        statusField.textContent = `SAVING: ${show.name.toUpperCase()}...`;
+        await addDoc(collection(db, 'subscriptions'), {
+          userId: currentUser.uid,
+          showId: show.id,
+          showData: show,
+          createdAt: serverTimestamp()
+        });
+        statusField.textContent = `SAVED: ${show.name.toUpperCase()}`;
+      } else {
+        statusField.textContent = `REMOVING: ${show.name.toUpperCase()}...`;
+        // We need to find the document ID to delete it
+        const q = query(collection(db, 'subscriptions'), 
+                        where('userId', '==', currentUser.uid), 
+                        where('showId', '==', show.id));
+        const snapshot = await getDocs(q);
+        snapshot.forEach(async (docSnap) => {
+          await deleteDoc(doc(db, 'subscriptions', docSnap.id));
+        });
+        statusField.textContent = `REMOVED: ${show.name.toUpperCase()}`;
       }
+    } catch (error) {
+      handleFirestoreError(error, 'write', 'subscriptions');
     }
   };
 
   const renderSubscriptions = () => {
-    if (subscriptions.length === 0) {
-      statusField.textContent = '0 SUBSCRIPTIONS';
-      subsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; font-family: \'Press Start 2P\'; font-size: 14px; padding: 40px; color: var(--win-border-dark);">NO SUBSCRIPTIONS YET...</div>';
+    if (!currentUser) {
+      subsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; font-family: \'Press Start 2P\'; font-size: 14px; padding: 40px; color: var(--win-border-dark);">PLEASE LOGIN TO VIEW SAVED SHOWS</div>';
       return;
     }
 
-    statusField.textContent = `${subscriptions.length} SUBSCRIPTIONS ACTIVE`;
+    if (subscriptions.length === 0) {
+      statusField.textContent = '0 SAVED SHOWS';
+      subsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; font-family: \'Press Start 2P\'; font-size: 14px; padding: 40px; color: var(--win-border-dark);">NO SAVED SHOWS YET...</div>';
+      return;
+    }
+
+    statusField.textContent = `${subscriptions.length} SHOWS SAVED`;
     subsGrid.innerHTML = subscriptions.map(show => renderShowCard(show, true)).join('');
     attachCardListeners(subsGrid, subscriptions);
   };
 
   // Search function
   const searchShows = async () => {
-    const query = searchInput.value.trim();
-    if (!query) {
+    const queryStr = searchInput.value.trim();
+    if (!queryStr) {
       statusField.textContent = 'ERROR: EMPTY QUERY';
       return;
     }
 
-    statusField.textContent = `SEARCHING FOR: ${query.toUpperCase()}...`;
+    statusField.textContent = `SEARCHING FOR: ${queryStr.toUpperCase()}...`;
     resultsGrid.innerHTML = '<div class="blink" style="grid-column: 1/-1; text-align: center; font-family: \'Press Start 2P\'; font-size: 14px; padding: 40px;">UPLOADING DATA...</div>';
 
     try {
-      const url = `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`;
-      console.log(`[SEARCH] Fetching URL: ${url}`);
+      const url = `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(queryStr)}`;
       const response = await fetch(url);
       
       if (!response.ok) {
-        console.error(`[SEARCH] API Error: ${response.status} ${response.statusText} for URL: ${url}`);
         throw new Error(`API responded with status ${response.status}`);
       }
       
       const data = await response.json();
-      console.log(`[SEARCH] Data received:`, data);
       renderResults(data);
     } catch (error) {
       console.error('[SEARCH] Search failed:', error);
@@ -134,8 +236,10 @@ document.addEventListener('DOMContentLoaded', () => {
     container.querySelectorAll('.btn-subscribe').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = parseInt(e.target.dataset.id);
-        const show = dataList.find(item => (item.show ? item.show.id : item.id) === id);
-        toggleSubscription(show.show || show);
+        // Find show in dataList (which could be search results or subscriptions)
+        const item = dataList.find(i => (i.show ? i.show.id : i.id) === id);
+        const show = item.show || item;
+        toggleSubscription(show);
       });
     });
   };
@@ -176,11 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
     subscriptions.forEach(show => {
       if (show.schedule && show.schedule.days && show.schedule.days.length > 0) {
         show.schedule.days.forEach(day => {
-          // Create a weekly recurring event for each day
           const now = new Date();
           const stamp = now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
           
-          // Map day string to RRULE day
           const dayMap = {
             'Monday': 'MO', 'Tuesday': 'TU', 'Wednesday': 'WE', 
             'Thursday': 'TH', 'Friday': 'FR', 'Saturday': 'SA', 'Sunday': 'SU'
@@ -228,23 +330,19 @@ document.addEventListener('DOMContentLoaded', () => {
     testBtn.addEventListener('click', async () => {
       statusField.textContent = 'TESTING CONNECTION...';
       const testUrl = 'https://api.tvmaze.com/search/shows?q=test';
-      console.log(`[TEST] Fetching URL: ${testUrl}`);
       try {
         const response = await fetch(testUrl);
         if (response.ok) {
-          console.log(`[TEST] Connection successful: ${response.status} ${response.statusText}`);
           statusField.textContent = 'CONNECTION: STABLE [200 OK]';
           statusField.style.color = 'var(--neon-green)';
           setTimeout(() => {
             statusField.style.color = '';
-            statusField.textContent = 'SYSTEM READY';
+            statusField.textContent = currentUser ? `LOGGED IN AS: ${currentUser.displayName.toUpperCase()}` : 'SYSTEM READY';
           }, 3000);
         } else {
-          console.error(`[TEST] Connection failed: ${response.status} ${response.statusText}`);
           throw new Error(`Status ${response.status}`);
         }
       } catch (e) {
-        console.error('[TEST] Connection error:', e);
         statusField.textContent = `CONNECTION: FAILED [${e.message.toUpperCase()}]`;
         statusField.style.color = 'red';
       }

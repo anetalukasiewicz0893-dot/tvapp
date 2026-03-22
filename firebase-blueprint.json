@@ -1,0 +1,35 @@
+{
+  "entities": {
+    "UserSubscription": {
+      "title": "User Subscription",
+      "description": "A TV show subscription for a specific user.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The UID of the user who subscribed."
+        },
+        "showId": {
+          "type": "integer",
+          "description": "The ID of the TV show from TVMaze."
+        },
+        "showData": {
+          "type": "object",
+          "description": "The full show data object from TVMaze."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the subscription was created."
+        }
+      },
+      "required": ["userId", "showId", "showData", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/subscriptions/{subscriptionId}": {
+      "schema": "UserSubscription",
+      "description": "Collection of all user subscriptions."
+    }
+  }
+}

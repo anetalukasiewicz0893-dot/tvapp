@@ -1,5 +1,5 @@
 {
-  "name": "Y2K TV SEARCH",
-  "description": "A minimal, early-2000s style TV show search engine powered by the TVMaze API.",
+  "name": "Tv show tracker",
+  "description": "A retro-styled TV show tracker with Tumblr aesthetics and Google Calendar integration.",
   "requestFramePermissions": []
 }
