@@ -25,15 +25,20 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsGrid.innerHTML = '<div class="blink" style="grid-column: 1/-1; text-align: center; font-family: \'Press Start 2P\'; font-size: 14px; padding: 40px;">UPLOADING DATA...</div>';
 
     try {
+      console.log(`Fetching: https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`);
       const response = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`);
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) {
+        console.error(`API Error: ${response.status} ${response.statusText}`);
+        throw new Error(`Network response was not ok: ${response.status}`);
+      }
       
       const data = await response.json();
+      console.log(`Data received:`, data);
       renderResults(data);
     } catch (error) {
       console.error('Search failed:', error);
-      statusField.textContent = 'ERROR: CONNECTION FAILED';
-      resultsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: red; font-family: \'Press Start 2P\'; font-size: 14px; padding: 40px;">SYSTEM ERROR: FAILED TO FETCH DATA</div>';
+      statusField.textContent = `ERROR: ${error.message.toUpperCase()}`;
+      resultsGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: red; font-family: 'Press Start 2P'; font-size: 14px; padding: 40px;">SYSTEM ERROR: ${error.message.toUpperCase()}</div>`;
     }
   };
 
